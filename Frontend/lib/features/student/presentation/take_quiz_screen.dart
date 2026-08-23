@@ -38,11 +38,13 @@ class TakeQuizScreen extends ConsumerWidget {
         body: SafeArea(
           child: stateAsync.when(
             loading: () => const LoadingView(),
-            error: (e, __) => ErrorView(failure: FailureMapper.fromException(e)),
+            error: (e, __) =>
+                ErrorView(failure: FailureMapper.fromException(e)),
             data: (state) {
               final question = state.currentQuestion;
               final selected = state.answers[question.id];
-              final progress = (state.currentIndex + 1) / state.questions.length;
+              final progress =
+                  (state.currentIndex + 1) / state.questions.length;
               final isLast = state.currentIndex == state.questions.length - 1;
 
               return Padding(
@@ -68,10 +70,13 @@ class TakeQuizScreen extends ConsumerWidget {
                                   tween: Tween(begin: 0, end: progress),
                                   duration: const Duration(milliseconds: 260),
                                   curve: Curves.easeOut,
-                                  builder: (context, value, _) => LinearProgressIndicator(
+                                  builder: (context, value, _) =>
+                                      LinearProgressIndicator(
                                     value: value,
                                     minHeight: 6,
-                                    backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+                                    backgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .outlineVariant,
                                   ),
                                 ),
                               ),
@@ -105,21 +110,34 @@ class TakeQuizScreen extends ConsumerWidget {
                         ),
                         child: SingleChildScrollView(
                           key: ValueKey(question.id),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(question.text, style: Theme.of(context).textTheme.displaySmall),
-                              const SizedBox(height: AppSpacing.lg),
-                              ...['A', 'B', 'C', 'D'].map((k) => Padding(
-                                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                                    child: OptionTile(
-                                      keyLabel: k,
-                                      text: question.options.forKey(k),
-                                      isSelected: selected == k,
-                                      onTap: () => controller.selectAnswer(question.id, k),
-                                    ),
-                                  )),
-                            ],
+                          child: LayoutBuilder(
+                            builder: (context, constraints) => SizedBox(
+                              width: constraints.maxWidth,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    question.text,
+                                    softWrap: true,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                  ),
+                                  const SizedBox(height: AppSpacing.lg),
+                                  ...['A', 'B', 'C', 'D'].map((k) => Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: AppSpacing.sm),
+                                        child: OptionTile(
+                                          keyLabel: k,
+                                          text: question.options.forKey(k),
+                                          isSelected: selected == k,
+                                          onTap: () => controller.selectAnswer(
+                                              question.id, k),
+                                        ),
+                                      )),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -134,14 +152,17 @@ class TakeQuizScreen extends ConsumerWidget {
                               onPressed: controller.previous,
                             ),
                           ),
-                        if (state.currentIndex > 0) const SizedBox(width: AppSpacing.sm),
+                        if (state.currentIndex > 0)
+                          const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: AppButton(
                             label: isLast ? 'Review & Submit' : 'Next',
                             onPressed: () {
                               if (isLast) {
                                 Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (_) => ReviewSubmitScreen(quizId: quizId)),
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          ReviewSubmitScreen(quizId: quizId)),
                                 );
                               } else {
                                 controller.next();

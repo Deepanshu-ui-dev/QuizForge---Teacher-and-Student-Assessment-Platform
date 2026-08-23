@@ -41,9 +41,21 @@ class StatRing extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(centerText, style: theme.textTheme.displayLarge),
+              SizedBox(
+                width: size * 0.78,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(centerText, style: theme.textTheme.displayLarge),
+                ),
+              ),
               if (subLabel != null)
-                Text(subLabel!, style: theme.textTheme.bodySmall),
+                SizedBox(
+                  width: size * 0.78,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(subLabel!, style: theme.textTheme.bodySmall),
+                  ),
+                ),
             ],
           ),
         ],

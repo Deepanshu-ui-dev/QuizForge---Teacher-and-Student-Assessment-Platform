@@ -33,17 +33,20 @@ class OptionTile extends StatelessWidget {
       case OptionReviewState.correct:
         fillColor = AppColors.success.withValues(alpha: 0.08);
         borderColor = AppColors.success;
-        trailingIcon = const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20);
+        trailingIcon = const Icon(Icons.check_circle_rounded,
+            color: AppColors.success, size: 20);
         break;
       case OptionReviewState.incorrect:
         fillColor = AppColors.error.withValues(alpha: 0.08);
         borderColor = AppColors.error;
-        trailingIcon = const Icon(Icons.cancel_rounded, color: AppColors.error, size: 20);
+        trailingIcon =
+            const Icon(Icons.cancel_rounded, color: AppColors.error, size: 20);
         break;
       case OptionReviewState.none:
         if (isSelected) {
           borderColor = AppColors.accentIndigo;
-          trailingIcon = const Icon(Icons.check_circle_rounded, color: AppColors.accentIndigo, size: 20);
+          trailingIcon = const Icon(Icons.check_circle_rounded,
+              color: AppColors.accentIndigo, size: 20);
         }
     }
 
@@ -58,7 +61,8 @@ class OptionTile extends StatelessWidget {
             borderRadius: AppRadii.mdRadius,
             border: Border.all(
               color: borderColor,
-              width: isSelected || reviewState != OptionReviewState.none ? 1.6 : 1,
+              width:
+                  isSelected || reviewState != OptionReviewState.none ? 1.6 : 1,
             ),
             boxShadow: isSelected && reviewState == OptionReviewState.none
                 ? [
@@ -87,7 +91,9 @@ class OptionTile extends StatelessWidget {
                         ? AppColors.accentIndigo.withValues(alpha: 0.1)
                         : null,
                     border: Border.all(
-                      color: isSelected ? AppColors.accentIndigo : theme.colorScheme.outline,
+                      color: isSelected
+                          ? AppColors.accentIndigo
+                          : theme.colorScheme.outline,
                     ),
                   ),
                   child: Text(
@@ -98,7 +104,13 @@ class OptionTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
-                Expanded(child: Text(text, style: theme.textTheme.bodyLarge)),
+                Expanded(
+                  child: Text(
+                    text,
+                    softWrap: true,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
                 if (trailingIcon != null) trailingIcon,
               ],
             ),
