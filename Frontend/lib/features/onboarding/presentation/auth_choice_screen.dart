@@ -16,9 +16,9 @@ class AuthChoiceScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(
+          const Positioned.fill(
             child: DecoratedBox(
-              decoration: const BoxDecoration(gradient: AppGradients.indigoViolet),
+              decoration: BoxDecoration(gradient: AppGradients.indigoViolet),
             ),
           ),
           Positioned(
@@ -75,7 +75,7 @@ class AuthChoiceScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Create quizzes, join with a code, and see backend-graded results instantly.',
+                    'Create quizzes, join with a quiz ID, and get instantly graded results.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: AppColors.pureWhite.withValues(alpha: 0.88),
                     ),

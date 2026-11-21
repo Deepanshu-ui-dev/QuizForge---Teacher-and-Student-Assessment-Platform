@@ -7,11 +7,20 @@ import '../../core/models/quiz.dart';
 import '../../core/utils/difficulty_style.dart';
 
 class QuizCard extends StatelessWidget {
-  const QuizCard({super.key, required this.quiz, this.onTap, this.trailing});
+  const QuizCard({
+    super.key,
+    required this.quiz,
+    this.onTap,
+    this.trailing,
+    this.showTeacherMeta = false,
+  });
 
   final Quiz quiz;
   final VoidCallback? onTap;
   final Widget? trailing;
+
+  /// Show attempt count and flag quizzes students can't take yet.
+  final bool showTeacherMeta;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +96,17 @@ class QuizCard extends StatelessWidget {
                             icon: Icons.help_outline_rounded,
                             label: '${quiz.stats.totalQuestions} Qs',
                           ),
+                          if (showTeacherMeta)
+                            _MetaChip(
+                              icon: Icons.people_alt_outlined,
+                              label: '${quiz.stats.totalResults} attempts',
+                            ),
+                          if (showTeacherMeta && !quiz.hasQuestions)
+                            const _MetaChip(
+                              icon: Icons.warning_amber_rounded,
+                              iconColor: AppColors.warning,
+                              label: 'Needs questions',
+                            ),
                         ],
                       ),
                     ],

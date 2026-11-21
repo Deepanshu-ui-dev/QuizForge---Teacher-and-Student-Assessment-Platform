@@ -19,7 +19,7 @@ const createQuiz = async (req, res, next) => {
 
 const getAllQuizzes = async (req, res, next) => {
     try {
-        const result = await quizService.getAllQuizzes(req.query);
+        const result = await quizService.getAllQuizzes(req.query, req.user.id);
 
         res.status(200).json({
             success: true,

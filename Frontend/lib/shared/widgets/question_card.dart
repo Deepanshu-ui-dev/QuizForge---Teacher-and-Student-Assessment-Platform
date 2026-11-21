@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radii.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../core/models/question.dart';
@@ -34,15 +35,18 @@ class QuestionCard extends StatelessWidget {
             children: [
               Text('Q$index', style: theme.textTheme.labelLarge),
               const Spacer(),
-              Text('${question.marks} marks', style: theme.textTheme.bodySmall),
+              Text('${question.marks} mark${question.marks == 1 ? '' : 's'}',
+                  style: theme.textTheme.bodySmall),
               if (onEdit != null)
                 IconButton(
+                  tooltip: 'Edit question',
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   onPressed: onEdit,
                   visualDensity: VisualDensity.compact,
                 ),
               if (onDelete != null)
                 IconButton(
+                  tooltip: 'Delete question',
                   icon: const Icon(Icons.delete_outline_rounded, size: 18),
                   onPressed: onDelete,
                   visualDensity: VisualDensity.compact,
@@ -60,8 +64,9 @@ class QuestionCard extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
+                  color: isCorrect ? AppColors.success.withValues(alpha: 0.1) : null,
                   border: Border.all(
-                    color: isCorrect ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
+                    color: isCorrect ? AppColors.success : theme.colorScheme.outlineVariant,
                     width: isCorrect ? 1.4 : 1,
                   ),
                   borderRadius: AppRadii.smRadius,

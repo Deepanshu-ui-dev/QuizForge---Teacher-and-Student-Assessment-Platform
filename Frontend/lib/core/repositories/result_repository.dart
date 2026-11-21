@@ -37,10 +37,10 @@ class ResultRepository {
     }
   }
 
-  Future<Map<String, dynamic>> getMyStats() async {
+  Future<MyStats> getMyStats() async {
     try {
       final response = await _dio.get(ApiEndpoints.myStats);
-      return response.data['data'] as Map<String, dynamic>;
+      return MyStats.fromJson(response.data['data'] as Map<String, dynamic>);
     } catch (e) {
       throw FailureMapper.fromException(e);
     }

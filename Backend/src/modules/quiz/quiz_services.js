@@ -23,7 +23,7 @@ const createQuiz = async (quizData, userId) => {
     return mapQuizToResponse(quiz);
 };
 
-const getAllQuizzes = async (query) => {
+const getAllQuizzes = async (query, userId) => {
     const page = Math.max(Number(query.page) || 1, 1);
     const limit = Math.max(Math.min(Number(query.limit) || 10, 100), 1);
     const search = query.search || "";
@@ -54,6 +54,10 @@ const getAllQuizzes = async (query) => {
 
     if (difficulty && ["EASY", "MEDIUM", "HARD"].includes(difficulty)) {
         where.difficulty = difficulty;
+    }
+
+    if (query.mine === "true" && userId) {
+        where.createdBy = userId;
     }
 
     const orderBy = {};

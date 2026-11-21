@@ -19,6 +19,8 @@ const {
     mapResultDetailedResponse
 } = require("./result_mapper");
 
+const { deleteCache } = require("../../utils/cache");
+
 
 const submitQuiz = async (
     quizId,
@@ -74,11 +76,11 @@ const submitQuiz = async (
 
     if (
         !Array.isArray(answers) ||
-        answers.length !== questions.length
+        answers.length > questions.length
     ) {
 
         throw new BadRequestError(
-            "All questions must be answered"
+            "More answers submitted than the quiz has questions"
         );
     }
 
@@ -187,6 +189,35 @@ const submitQuiz = async (
     }
 
 
+    // Unanswered questions (e.g. the timer expired) are recorded as wrong
+    // with an empty selection so the review shows the full quiz.
+    for (const question of questions) {
+
+        if (submittedQuestionIds.has(question.id)) {
+            continue;
+        }
+
+        wrongAnswers++;
+
+        attemptAnswers.push({
+
+            questionId: question.id,
+
+            selectedAnswer: "",
+
+            correctAnswer: question.correctAnswer,
+
+            isCorrect: false,
+
+            marksAwarded: 0,
+
+            question: {
+                question: question.question
+            }
+        });
+    }
+
+
     const totalMarks =
         questions.reduce(
             (total, question) =>
@@ -252,6 +283,10 @@ const submitQuiz = async (
                 return createdResult;
             }
         );
+
+
+    // Quiz detail embeds the attempt count.
+    await deleteCache(`quiz:${id}`);
 
 
     try {

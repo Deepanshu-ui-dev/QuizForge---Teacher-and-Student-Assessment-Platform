@@ -10,4 +10,6 @@ class StorageKeys {
   static const String userRole = 'auth_user_role';
 
   static const String onboardingSeen = 'onboarding_seen_flag';
+
+  static const String themeMode = 'pref_theme_mode';
 }

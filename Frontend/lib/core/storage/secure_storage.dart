@@ -32,8 +32,6 @@ class SecureStorageService {
     return raw == null ? null : int.tryParse(raw);
   }
 
-  Future<bool> get hasSession async => (await token) != null;
-
   Future<void> clearSession() async {
     await Future.wait([
       _storage.delete(key: StorageKeys.jwtToken),
@@ -51,4 +49,9 @@ class SecureStorageService {
 
   Future<void> setOnboardingSeen() =>
       _storage.write(key: StorageKeys.onboardingSeen, value: 'true');
+
+  Future<String?> get themeMode => _storage.read(key: StorageKeys.themeMode);
+
+  Future<void> setThemeMode(String value) =>
+      _storage.write(key: StorageKeys.themeMode, value: value);
 }

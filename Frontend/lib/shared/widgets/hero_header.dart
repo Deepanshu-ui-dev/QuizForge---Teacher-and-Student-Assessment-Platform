@@ -25,9 +25,10 @@ class HeroHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
+      // Shell tabs have no AppBar, so clear the status bar ourselves.
+      padding: EdgeInsets.fromLTRB(
         AppSpacing.lg,
-        AppSpacing.xl,
+        MediaQuery.paddingOf(context).top + AppSpacing.lg,
         AppSpacing.lg,
         AppSpacing.lg,
       ),
@@ -58,7 +59,7 @@ class HeroHeader extends StatelessWidget {
             ),
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
@@ -79,7 +80,10 @@ class HeroHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing!,
+              if (trailing != null) ...[
+                const SizedBox(width: AppSpacing.md),
+                trailing!,
+              ],
             ],
           ),
         ],

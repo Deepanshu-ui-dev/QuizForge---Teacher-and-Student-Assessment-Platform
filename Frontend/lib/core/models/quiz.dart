@@ -73,6 +73,8 @@ class Quiz {
   final QuizCreator? creator;
   final QuizStats stats;
 
+  bool get hasQuestions => stats.totalQuestions > 0;
+
   factory Quiz.fromJson(Map<String, dynamic> json) => Quiz(
         id: json['id'] as int,
         title: json['title'] as String? ?? '',

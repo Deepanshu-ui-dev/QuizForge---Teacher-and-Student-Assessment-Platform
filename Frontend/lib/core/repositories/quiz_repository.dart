@@ -13,6 +13,7 @@ class QuizRepository {
     int limit = 20,
     String? search,
     QuizDifficulty? difficulty,
+    bool mine = false,
     String sortBy = 'createdAt',
     String sortOrder = 'DESC',
   }) async {
@@ -22,6 +23,7 @@ class QuizRepository {
         'limit': limit.toString(),
         if (search != null && search.isNotEmpty) 'search': search,
         if (difficulty != null) 'difficulty': difficulty.backendValue,
+        if (mine) 'mine': 'true',
         'sortBy': sortBy,
         'sortOrder': sortOrder,
       });

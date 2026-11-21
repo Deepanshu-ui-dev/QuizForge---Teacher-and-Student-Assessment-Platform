@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app/theme/app_radii.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/app_spacing.dart';
-import '../../../core/errors/failure_mapper.dart';
 import '../../../shared/widgets/empty_view.dart';
 import '../../../shared/widgets/error_view.dart';
 import '../../../shared/widgets/loading_view.dart';
-import '../../../shared/widgets/percentage_badge.dart';
+import '../../../shared/widgets/result_tile.dart';
 import '../providers/student_result_providers.dart';
+import 'student_shell.dart';
 
 class AttemptHistoryScreen extends ConsumerWidget {
   const AttemptHistoryScreen({super.key});
@@ -15,56 +16,43 @@ class AttemptHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resultsAsync = ref.watch(myResultsProvider);
-    final theme = Theme.of(context);
+
+    Future<void> refresh() async {
+      ref.invalidate(myResultsProvider);
+      try {
+        await ref.read(myResultsProvider.future);
+      } catch (_) {}
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Attempt History')),
+      appBar: AppBar(title: const Text('Attempt history'), automaticallyImplyLeading: false),
       body: resultsAsync.when(
         loading: () => const LoadingView(lines: 5),
-        error: (e, __) => Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: ErrorView(
-            failure: FailureMapper.fromException(e),
-            onRetry: () => ref.invalidate(myResultsProvider),
-          ),
-        ),
+        error: (e, __) => ErrorView.from(e, onRetry: () => ref.invalidate(myResultsProvider)),
         data: (results) {
           if (results.isEmpty) {
-            return const EmptyView(icon: Icons.history_rounded, message: 'No attempts yet');
+            return EmptyView(
+              icon: Icons.history_rounded,
+              title: 'No attempts yet',
+              message: 'Take your first quiz and your scores will appear here.',
+              actionLabel: 'Find a quiz',
+              onAction: () => ref.read(studentTabProvider.notifier).state = StudentTabs.join,
+            );
           }
-          return ListView.separated(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            itemCount: results.length,
-            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (context, i) {
-              final r = results[i];
-              return Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: AppRadii.lgRadius,
-                  border: Border.all(color: theme.colorScheme.outlineVariant),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(r.quizTitle ?? 'Quiz #${r.quizId}', style: theme.textTheme.bodyLarge),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${r.submittedAt.toLocal()}'.split('.').first,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                    PercentageBadge(percentage: r.percentage),
-                  ],
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: refresh,
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.xxl),
+              itemCount: results.length,
+              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (context, i) {
+                final r = results[i];
+                return ResultTile(
+                  result: r,
+                  onTap: () => context.push(AppRoutes.studentResult(r.id), extra: r),
+                );
+              },
+            ),
           );
         },
       ),

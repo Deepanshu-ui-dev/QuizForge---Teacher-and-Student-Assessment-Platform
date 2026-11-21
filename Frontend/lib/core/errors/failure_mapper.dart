@@ -24,8 +24,9 @@ class FailureMapper {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
+        return const NetworkFailure('The server is taking too long to respond. Please try again.');
       case DioExceptionType.connectionError:
-        return const NetworkFailure();
+        return const NetworkFailure("Can't reach the server. Check your connection and try again.");
       case DioExceptionType.badCertificate:
         return const NetworkFailure('Could not establish a secure connection.');
       case DioExceptionType.cancel:
@@ -45,25 +46,30 @@ class FailureMapper {
     final statusCode = response?.statusCode ?? 0;
     final data = response?.data;
 
-    String message = 'Something went wrong. Please try again.';
-    if (data is Map && data['message'] is String) {
-      message = data['message'] as String;
+    String? serverMessage;
+    if (data is Map && data['message'] is String && (data['message'] as String).isNotEmpty) {
+      serverMessage = data['message'] as String;
     }
 
     switch (statusCode) {
       case 400:
-        return ValidationFailure(message);
-      case 401:
-        return UnauthorizedFailure(message);
-      case 403:
-        return ServerFailure(statusCode, message);
-      case 404:
-        return ServerFailure(statusCode, message);
       case 409:
-        return ValidationFailure(message);
-      case 500:
+      case 422:
+        return ValidationFailure(serverMessage ?? 'Please check your input and try again.');
+      case 401:
+        return UnauthorizedFailure(serverMessage ?? 'Your session has expired. Please log in again.');
+      case 403:
+        return ServerFailure(statusCode, "You don't have permission to do that.");
+      case 404:
+        return ServerFailure(statusCode, serverMessage ?? "We couldn't find what you were looking for.");
+      case 429:
+        return ServerFailure(statusCode, 'Too many requests. Please wait a moment and try again.');
       default:
-        return ServerFailure(statusCode, message);
+        // Never surface raw "Internal Server Error" / stack-ish messages.
+        if (statusCode >= 500) {
+          return ServerFailure(statusCode, 'The server ran into a problem. Please try again shortly.');
+        }
+        return ServerFailure(statusCode, serverMessage ?? 'Something went wrong. Please try again.');
     }
   }
 }

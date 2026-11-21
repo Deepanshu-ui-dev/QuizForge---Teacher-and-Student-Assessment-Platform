@@ -32,17 +32,18 @@ class ApiClient {
       AuthInterceptor(_storage, onUnauthorized: onUnauthorized),
     );
 
-    _dio.interceptors.add(
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-        error: true,
-        logPrint: (obj) {
-          // ignore: avoid_print
-          print('[API] $obj');
-        },
-      ),
-    );
+    // Never log in release builds: request bodies contain passwords and
+    // responses contain JWTs.
+    if (kDebugMode) {
+      _dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          error: true,
+          logPrint: (obj) => debugPrint('[API] $obj'),
+        ),
+      );
+    }
   }
 
   late final Dio _dio;

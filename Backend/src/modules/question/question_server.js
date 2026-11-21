@@ -9,6 +9,12 @@ const {
     mapQuestionStudentResponse
 } = require("./question_mapper");
 
+const { deleteCache } = require("../../utils/cache");
+
+// Quiz detail responses embed question counts, so any question mutation
+// must drop the cached quiz or clients see stale stats for up to 5 minutes.
+const invalidateQuizCache = (quizId) => deleteCache(`quiz:${quizId}`);
+
 const createQuestion = async (quizId, data) => {
 
     const id = Number(quizId);
@@ -37,6 +43,8 @@ const createQuestion = async (quizId, data) => {
             quizId: id
         }
     });
+
+    await invalidateQuizCache(id);
 
     return mapQuestionAdminResponse(question);
 };
@@ -170,6 +178,8 @@ const updateQuestion = async (id, data) => {
         }
     });
 
+    await invalidateQuizCache(updatedQuestion.quizId);
+
     return mapQuestionAdminResponse(updatedQuestion);
 };
 
@@ -209,6 +219,8 @@ const deleteQuestion = async (id) => {
             id: questionId
         }
     });
+
+    await invalidateQuizCache(question.quizId);
 };
 
 

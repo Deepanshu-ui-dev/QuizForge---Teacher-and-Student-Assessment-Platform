@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../app/router.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/providers/core_providers.dart';
@@ -34,11 +32,19 @@ class _OnboardingCarouselScreenState extends ConsumerState<OnboardingCarouselScr
   final _controller = PageController();
   int _index = 0;
 
+  bool _finishing = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _finish() async {
-    final storage = ref.read(secureStorageServiceProvider);
-    await storage.setOnboardingSeen();
-    ref.invalidate(sessionProvider);
-    if (mounted) context.go(AppRoutes.authChoice);
+    if (_finishing) return;
+    _finishing = true;
+    // The router redirects to the auth choice screen once the flag flips.
+    await ref.read(sessionProvider.notifier).markOnboardingSeen();
   }
 
   @override

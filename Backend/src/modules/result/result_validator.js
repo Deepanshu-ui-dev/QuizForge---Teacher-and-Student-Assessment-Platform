@@ -14,7 +14,8 @@ const submitQuizSchema = z.object({
                 ])
             })
         )
-        .min(1)
+        // May be empty or partial: when the timer runs out the client submits
+        // whatever was answered and unanswered questions are graded as wrong.
 });
 
 module.exports = {

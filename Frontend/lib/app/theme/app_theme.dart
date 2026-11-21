@@ -7,7 +7,7 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get light {
-    final colorScheme = ColorScheme.light(
+    const colorScheme = ColorScheme.light(
       primary: AppColors.ink,
       onPrimary: AppColors.pureWhite,
       secondary: AppColors.accentIndigo,
@@ -24,7 +24,7 @@ class AppTheme {
   }
 
   static ThemeData get dark {
-    final colorScheme = ColorScheme.dark(
+    const colorScheme = ColorScheme.dark(
       primary: AppColors.pureWhite,
       onPrimary: AppColors.ink,
       secondary: AppColors.accentIndigoDark,
@@ -141,7 +141,7 @@ class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surface,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xl)),
         ),
       ),

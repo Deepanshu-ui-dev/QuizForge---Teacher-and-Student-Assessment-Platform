@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../storage/secure_storage.dart';
+import 'api_endpoints.dart';
 
 class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._storage, {required this.onUnauthorized});
@@ -24,8 +25,10 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401) {
-      await _storage.clearSession();
+    // A 401 from login means "wrong password", not "session expired".
+    final path = err.requestOptions.path;
+    final isAuthCall = path == ApiEndpoints.login || path == ApiEndpoints.register;
+    if (err.response?.statusCode == 401 && !isAuthCall) {
       await onUnauthorized();
     }
     handler.next(err);

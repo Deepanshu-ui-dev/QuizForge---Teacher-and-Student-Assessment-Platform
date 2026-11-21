@@ -15,6 +15,9 @@ class QuizAttemptAnswerDetail {
   final bool isCorrect;
   final int marksAwarded;
 
+  /// Empty when the question was left blank (e.g. the timer ran out).
+  bool get isAnswered => selectedAnswer.isNotEmpty;
+
   factory QuizAttemptAnswerDetail.fromJson(Map<String, dynamic> json) => QuizAttemptAnswerDetail(
         questionId: json['questionId'] as int,
         questionText: json['question'] as String?,
@@ -56,6 +59,8 @@ class QuizResult {
   final DateTime submittedAt;
   final List<QuizAttemptAnswerDetail> answers;
 
+  int get unansweredCount => answers.where((a) => !a.isAnswered).length;
+
   factory QuizResult.fromJson(Map<String, dynamic> json) {
     final quiz = json['quiz'] as Map<String, dynamic>?;
     final user = json['user'] as Map<String, dynamic>?;
@@ -78,4 +83,22 @@ class QuizResult {
           const [],
     );
   }
+}
+
+class MyStats {
+  const MyStats({
+    required this.totalAttempts,
+    required this.averagePercentage,
+    required this.highestPercentage,
+  });
+
+  final int totalAttempts;
+  final double averagePercentage;
+  final double highestPercentage;
+
+  factory MyStats.fromJson(Map<String, dynamic> json) => MyStats(
+        totalAttempts: json['totalAttempts'] as int? ?? 0,
+        averagePercentage: (json['averagePercentage'] as num?)?.toDouble() ?? 0,
+        highestPercentage: (json['highestPercentage'] as num?)?.toDouble() ?? 0,
+      );
 }

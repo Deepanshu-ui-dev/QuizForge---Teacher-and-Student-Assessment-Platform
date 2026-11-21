@@ -1,57 +1,49 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/errors/failure.dart';
 import '../../../core/errors/failure_mapper.dart';
 import '../../../core/models/user.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/repositories/repository_providers.dart';
 
-class AuthController extends AsyncNotifier<void> {
-  @override
-  Future<void> build() async {}
+/// Coordinates the auth repository with the session state machine.
+///
+/// Deliberately stateless: each screen owns its own loading/error state, so
+/// an error on Login no longer leaks into Register (they used to share one
+/// AsyncNotifier). Navigation is driven by the router reacting to
+/// [sessionProvider]; callers never navigate after sign-in/out themselves.
+class AuthService {
+  AuthService(this._ref);
+  final Ref _ref;
 
-  Future<AppUser?> login({required String email, required String password}) async {
-    state = const AsyncLoading();
+  /// Throws a `Failure` on error.
+  Future<AppUser> login({required String email, required String password}) async {
     try {
-      final repo = ref.read(authRepositoryProvider);
-      final user = await repo.login(email: email, password: password);
-      ref.invalidate(sessionProvider);
-      state = const AsyncData(null);
+      final user = await _ref.read(authRepositoryProvider).login(email: email, password: password);
+      _ref.read(sessionProvider.notifier).signedIn(user);
       return user;
-    } catch (e, st) {
-      final failure = FailureMapper.fromException(e);
-      state = AsyncError(failure, st);
-      return null;
+    } catch (e) {
+      throw FailureMapper.fromException(e);
     }
   }
 
-  Future<bool> register({
+  /// Registers then signs in, since the register endpoint returns no token.
+  /// Throws a `Failure` on error.
+  Future<AppUser> registerAndLogin({
     required String name,
     required String email,
     required String password,
-    String role = 'USER',
+    required String role,
   }) async {
-    state = const AsyncLoading();
     try {
-      final repo = ref.read(authRepositoryProvider);
-      await repo.register(name: name, email: email, password: password, role: role);
-      state = const AsyncData(null);
-      return true;
-    } catch (e, st) {
-      final failure = FailureMapper.fromException(e);
-      state = AsyncError(failure, st);
-      return false;
+      await _ref
+          .read(authRepositoryProvider)
+          .register(name: name, email: email, password: password, role: role);
+    } catch (e) {
+      throw FailureMapper.fromException(e);
     }
+    return login(email: email, password: password);
   }
 
-  Future<void> logout() async {
-    final repo = ref.read(authRepositoryProvider);
-    await repo.logout();
-    ref.invalidate(sessionProvider);
-  }
-
-  Failure? get currentFailure => state.hasError ? state.error as Failure : null;
+  Future<void> logout() => _ref.read(sessionProvider.notifier).signOut();
 }
 
-final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
-  AuthController.new,
-);
+final authServiceProvider = Provider<AuthService>(AuthService.new);

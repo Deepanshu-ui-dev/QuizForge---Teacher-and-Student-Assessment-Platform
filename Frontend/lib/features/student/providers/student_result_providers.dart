@@ -6,6 +6,10 @@ final myResultsProvider = FutureProvider.autoDispose<List<QuizResult>>((ref) {
   return ref.watch(resultRepositoryProvider).getMyResults();
 });
 
+final myStatsProvider = FutureProvider.autoDispose<MyStats>((ref) {
+  return ref.watch(resultRepositoryProvider).getMyStats();
+});
+
 final allResultsProvider = FutureProvider.autoDispose<List<QuizResult>>((ref) {
   return ref.watch(resultRepositoryProvider).getAllResults();
 });

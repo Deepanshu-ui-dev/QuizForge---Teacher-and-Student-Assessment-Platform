@@ -51,7 +51,8 @@ const queryParamsSchema = z.object({
     search: z.string().max(100, "Search must be less than 100 characters").optional(),
     difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).optional(),
     sortBy: z.enum(["title", "difficulty", "duration", "createdAt"]).optional(),
-    sortOrder: z.enum(["ASC", "DESC"]).optional()
+    sortOrder: z.enum(["ASC", "DESC"]).optional(),
+    mine: z.enum(["true", "false"]).optional()
 }).strict();
 
 module.exports = {
